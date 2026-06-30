@@ -1,0 +1,43 @@
+# =====================================================================
+# TAFNet — Preprocessing pipeline configuration
+# Used by scripts/00_dicom_to_nifti.py and scripts/01_preprocess.py
+# =====================================================================
+
+# -------- Paths --------
+paths:
+  # Raw ADNI directory (subject-folder structure containing DICOM/NIfTI).
+  # Standard ADNI export: <root>/<subject>/<modality_folder>/<date>/<series>/<files>
+  raw_dir: /mnt/drive/MyDrive/ADNI
+
+  # Intermediate directory for DICOM→NIfTI conversion output
+  # (only used if you have DICOM series rather than .nii(.gz))
+  nifti_dir: /mnt/drive/MyDrive/ADNI_nifti
+
+  # Final preprocessed volumes (128^3 brain-extracted, MNI-aligned, [0,1])
+  preprocessed_dir: /mnt/drive/MyDrive/ADNI_preprocessed
+
+  # Optional location for intermediate brain-extracted volumes
+  intermediate_dir: /mnt/drive/MyDrive/ADNI_intermediate
+  save_intermediates: false
+
+# -------- Processing parameters (JDAC-style) --------
+processing:
+  # Registration type: SyN (best), SyNRA (faster), Affine (fastest)
+  registration_type: SyNRA
+  n_threads: 4
+
+  # Intensity normalisation: minmax | percentile | zscore
+  normalization_method: minmax
+
+  apply_denoising: true
+  gaussian_sigma: 0.5
+
+  # Final volume shape after centre-crop / pad
+  target_size: [128, 128, 128]
+
+# -------- Execution --------
+execution:
+  # Skip output files that already exist (auto-resume)
+  skip_existing: true
+  # List files only without processing
+  dry_run: false

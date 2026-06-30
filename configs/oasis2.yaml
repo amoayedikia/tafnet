@@ -1,0 +1,59 @@
+# =====================================================================
+# TAFNet — OASIS-2 external-validation configuration
+#
+# Used by:
+#   scripts/04_oasis2_zeroshot.py     (zero-shot transfer)
+#   scripts/05_oasis2_finetune_cv.py  (warm-start fine-tuning A/B, 5-fold CV)
+#
+# Paths default to the ~/oasis2 layout on medical-vm. Override any field with
+# `--override key=value` on the CLI, e.g.:
+#   --override paths.oasis2_csv=~/oasis2/oasis2_inventory_mci_only.csv
+# =====================================================================
+
+# -------- Paths --------
+paths:
+  drive_root: /mnt/drive
+
+  # OASIS-2 inventory CSV. Columns (same schema the core dataset reads for
+  # ADNI): Subject, Visit, Image Data ID, Group
+  #   Visit in {v1,v2,v3,v4,v5}; Group in {CN,MCI,AD} (CDR-derived).
+  oasis2_csv: ~/oasis2/oasis2_inventory.csv
+
+  # Directory of preprocessed 128^3 OASIS-2 NIfTI volumes.
+  # Each file named: {Subject}_{Image Data ID}.nii.gz
+  oasis2_data_dir: ~/oasis2/oasis2_preprocessed
+
+  # ADNI-trained FULL TAFNet checkpoint (the fold-1 best model). This is the
+  # whole-model state_dict, NOT an encoder-only checkpoint.
+  oasis2_checkpoint: ~/oasis2/checkpoints/tafnet_v4_fold1_best.pth
+
+  # Where OASIS-2 outputs land (predictions, metrics, fine-tune folds).
+  oasis2_output_dir: ~/oasis2/results_full
+
+# -------- Architecture (MUST match the checkpoint) --------
+architecture:
+  encoder_channels: [16, 32, 64, 128, 128]
+  use_dcca: true
+  feature_dim: 128
+  num_heads: 8
+  dropout: 0.3
+
+# -------- Inference / loader --------
+phase56:
+  batch_size: 2
+
+evaluation:
+  threshold: 0.5
+
+# -------- Warm-start fine-tuning (per fold) --------
+oasis2_finetune:
+  lr: 1.0e-5          # 50x below ADNI phase-2 LR, to protect ADNI representations
+  epochs: 10          # fixed; no early stopping (final-epoch weights used)
+  batch_size: 2
+
+# -------- CV / misc --------
+training:
+  num_folds: 5
+  weight_decay: 1.0e-4
+  num_workers: 2
+  seed: 42

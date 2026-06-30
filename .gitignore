@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Model weights / checkpoints
+*.pth
+*.pt
+*.ckpt
+
+# Data & preprocessed volumes
+*.nii
+*.nii.gz
+*.dcm
+
+# Results / predictions / archives
+results*/
+*.json
+*.zip
+*.png
+
+# Config archives written at runtime
+run_config.yaml
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
