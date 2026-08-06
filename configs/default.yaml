@@ -1,0 +1,77 @@
+# =====================================================================
+# TAFNet — Default configuration
+#
+# Paths assume Google Drive is mounted at /mnt/drive via rclone (see
+# docs/gcp_setup.md). Override any field with `--override key=value`
+# arguments on the CLI scripts in scripts/.
+# =====================================================================
+
+# -------- Paths --------
+paths:
+  # Root where Google Drive is mounted on the GCP VM
+  drive_root: /mnt/drive
+
+  # ADNI metadata CSV (Image Data ID, Subject, Visit, Group columns)
+  csv_path: /mnt/drive/MyDrive/ADNI_Longitudinal_T1_2026_3_19_2026.csv
+
+  # Directory of preprocessed 128^3 NIfTI volumes
+  # (output of scripts/01_preprocess.py)
+  # Each file named: {subject}_{image_id}.nii.gz
+  data_dir: /mnt/drive/MyDrive/ADNI_preprocessed
+
+  # Directory where all training outputs land
+  # (checkpoints, predictions, plots, JSON summaries)
+  output_dir: /mnt/drive/MyDrive/TAFNet_results_v4
+
+  # Optional ADNIMERGE.csv for conversion labels; set to null if unavailable
+  adnimerge_path: null
+
+# -------- Phase 4: Encoder pretraining on cross-sectional CN/AD --------
+phase4:
+  epochs: 50
+  batch_size: 4
+  lr: 1.0e-4
+  patience: 15
+
+# -------- Phase 5/6: Fusion + classifier on longitudinal pairs --------
+phase56:
+  epochs: 50
+  batch_size: 2
+  lr: 5.0e-4
+  patience: 15
+
+# -------- Multi-timepoint visit pairs ----------------------------------
+# Each entry: [initial_visit, followup_visit, min_months_gap]
+visit_pairs:
+  - [bl,  m06, 3]
+  - [bl,  m12, 9]
+  - [bl,  m24, 18]
+  - [m06, m12, 3]
+  - [m12, m24, 9]
+  - [y1,  y2,  9]
+
+# -------- Architecture --------
+architecture:
+  encoder_channels: [16, 32, 64, 128, 128]
+  use_dcca: true
+  feature_dim: 128
+  num_heads: 8
+  dropout: 0.3
+
+# -------- Training --------
+training:
+  num_folds: 5
+  accumulation_steps: 2
+  weight_decay: 1.0e-4
+  num_workers: 2
+  use_amp: true
+  seed: 42
+
+# -------- Which benchmarks to run --------
+benchmarks:
+  resnet18_single: true
+  densenet121_single: true
+  siamese_subtract: true
+  cnn_lstm: true
+  tafnet_initial_only: true
+  tafnet_full: true
