@@ -20,7 +20,8 @@ from sklearn.model_selection import train_test_split
 from torch.amp import GradScaler, autocast
 from torch.utils.data import DataLoader
 
-from ..data import CrossSectionalDataset, subset_cross_sectional
+from ..data import (CrossSectionalDataset, LabelledVolumeDataset,
+                    subset_cross_sectional)
 from ..evaluation.metrics import compute_all_metrics
 from ..models import Phase4Model
 
@@ -48,46 +49,77 @@ def train_phase4(config, device: str) -> Tuple[Optional[str], float]:
     trcfg = config.training
 
     # Load full cohort once with verification (slow but worth it)
-    full_ds = CrossSectionalDataset(
-        csv_path=csv_path,
-        data_dir=data_dir,
-        is_training=False,
-        verify_files=True,
-    )
+    phase4_csv = getattr(config.paths, "phase4_csv", None)
+    use_labels = bool(phase4_csv)
+
+    if use_labels:
+        # DXSUM-derived baseline diagnosis over the role=='phase4' pool.
+        # Disjoint from the longitudinal task cohort by construction; the
+        # exclude_subjects check re-verifies it rather than trusting it (A2).
+        task_subjects = []
+        pairs_csv = getattr(config.paths, "pairs_csv", None)
+        if pairs_csv and os.path.exists(pairs_csv):
+            import pandas as _pd
+            task_subjects = _pd.read_csv(pairs_csv)["subject"].astype(str).unique()
+        full_ds = LabelledVolumeDataset(
+            labels_csv=phase4_csv, data_dir=data_dir,
+            is_training=False, verify_files=True,
+            exclude_subjects=task_subjects,
+        )
+    else:
+        print("\n[!] paths.phase4_csv is not set — falling back to the enrolment-"
+              "`Group` label.\n    This is the audit A2 leak: the encoder may be "
+              "pretrained on task-cohort subjects.")
+        full_ds = CrossSectionalDataset(
+            csv_path=csv_path,
+            data_dir=data_dir,
+            is_training=False,
+            verify_files=True,
+        )
 
     if len(full_ds) < 50:
         print(f"\n[!] Only {len(full_ds)} samples — too few for pretraining.")
         return None, 0.0
 
     # Subject-level split (avoids leakage)
-    subjects = list({s["subject"] for s in full_ds.samples})
-    subject_labels = []
-    for subj in subjects:
-        for s in full_ds.samples:
-            if s["subject"] == subj:
-                subject_labels.append(s["label"])
-                break
-    subject_labels = np.array(subject_labels)
+    if use_labels:
+        train_indices, val_indices = full_ds.get_subject_level_split(
+            test_frac=0.2, random_state=trcfg.seed,
+        )
+        train_subjs = set(full_ds.subjects[train_indices].tolist())
+        val_subjs = set(full_ds.subjects[val_indices].tolist())
+        assert not (train_subjs & val_subjs), "Phase 4 subject leakage"
+        train_ds = full_ds.subset(train_indices, is_training=True)
+        val_ds = full_ds.subset(val_indices, is_training=False)
+    else:
+        subjects = list({s["subject"] for s in full_ds.samples})
+        subject_labels = []
+        for subj in subjects:
+            for s in full_ds.samples:
+                if s["subject"] == subj:
+                    subject_labels.append(s["label"])
+                    break
+        subject_labels = np.array(subject_labels)
 
-    train_subjs, val_subjs = train_test_split(
-        subjects, test_size=0.2, stratify=subject_labels,
-        random_state=trcfg.seed,
-    )
-    train_set = set(train_subjs)
-    val_set = set(val_subjs)
-    train_indices = [i for i, s in enumerate(full_ds.samples)
-                     if s["subject"] in train_set]
-    val_indices = [i for i, s in enumerate(full_ds.samples)
-                   if s["subject"] in val_set]
+        train_subjs, val_subjs = train_test_split(
+            subjects, test_size=0.2, stratify=subject_labels,
+            random_state=trcfg.seed,
+        )
+        train_set = set(train_subjs)
+        val_set = set(val_subjs)
+        train_indices = [i for i, s in enumerate(full_ds.samples)
+                         if s["subject"] in train_set]
+        val_indices = [i for i, s in enumerate(full_ds.samples)
+                       if s["subject"] in val_set]
 
-    train_ds = subset_cross_sectional(
-        full_ds, train_indices,
-        csv_path=csv_path, data_dir=data_dir, is_training=True,
-    )
-    val_ds = subset_cross_sectional(
-        full_ds, val_indices,
-        csv_path=csv_path, data_dir=data_dir, is_training=False,
-    )
+        train_ds = subset_cross_sectional(
+            full_ds, train_indices,
+            csv_path=csv_path, data_dir=data_dir, is_training=True,
+        )
+        val_ds = subset_cross_sectional(
+            full_ds, val_indices,
+            csv_path=csv_path, data_dir=data_dir, is_training=False,
+        )
 
     n_tr_pos = int(train_ds.labels.sum())
     n_val_pos = int(val_ds.labels.sum())

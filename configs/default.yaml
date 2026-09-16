@@ -17,14 +17,25 @@ paths:
   # Directory of preprocessed 128^3 NIfTI volumes
   # (output of scripts/01_preprocess.py)
   # Each file named: {subject}_{image_id}.nii.gz
-  data_dir: /mnt/drive/MyDrive/ADNI_preprocessed
+  data_dir: /data/preprocessed
 
   # Directory where all training outputs land
   # (checkpoints, predictions, plots, JSON summaries)
-  output_dir: /mnt/drive/MyDrive/TAFNet_results_v4
+  output_dir: /data/results
 
   # Optional ADNIMERGE.csv for conversion labels; set to null if unavailable
   adnimerge_path: null
+  # Pre-computed conversion labels from label_adni_pairs.py.
+  # When set, training uses data.LabelledPairDataset and IGNORES
+  # csv_path/visit_pairs (which carry the enrolment-Group label).
+  pairs_csv: /data/adni_pairs_ready_pair.csv
+  # Phase 4 encoder pretraining: CN vs dementia over the role==phase4 pool
+  # (531 subjects, DXSUM baseline dx, disjoint from the task cohort).
+  # Unset = fall back to the enrolment-`Group` label, i.e. the A2 leak.
+  phase4_csv: /data/adni_phase4_labels.csv
+  # Subject-level held-out test fraction, carved off before CV.
+  # 0.0 reproduces the old behaviour: metrics are best-epoch validation.
+  holdout_frac: 0.15
 
 # -------- Phase 4: Encoder pretraining on cross-sectional CN/AD --------
 phase4:
@@ -55,7 +66,24 @@ architecture:
   encoder_channels: [16, 32, 64, 128, 128]
   use_dcca: true
   feature_dim: 128
-  num_heads: 8
+  # H = 4, d_k = 128/4 = 32, per Eq 15. Was 8, which contradicted the paper.
+  num_heads: 4
+  # Adaptive Temporal Gate:
+  #   patient  = Alg 4 / Eq 17-18, conditioned on [GAP(f_BL); GAP(f_M12)],
+  #              one (alpha,beta,gamma) per patient  (~16.6K params)
+  #   position = previous implementation, conditioned on the branch outputs
+  #              at each of the 512 spatial positions
+  # Run both for ablation 5.3c.
+  gate_mode: patient
+  # Eq 20 / Alg 3 line 14: f_out = f_fused + f_BL
+  baseline_residual: true
+  # Branch ablation (5.3b). Branches kept in the mixture; the others have their
+  # gate logits masked to -inf before the softmax, so the model is the exact
+  # renormalised mixture over what remains. Part of the fold-cache signature.
+  # Override with a comma-separated list, e.g.
+  #   --override architecture.branches=difference
+  #   --override architecture.branches=attention,concat
+  branches: [difference, attention, concat]
   dropout: 0.3
 
 # -------- Training --------
@@ -63,7 +91,7 @@ training:
   num_folds: 5
   accumulation_steps: 2
   weight_decay: 1.0e-4
-  num_workers: 2
+  num_workers: 4
   use_amp: true
   seed: 42
 

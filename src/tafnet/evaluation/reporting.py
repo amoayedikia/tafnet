@@ -81,6 +81,18 @@ def generate_results_summary(
             "FP_total": int(res["FP_total"]),
             "FN_total": int(res["FN_total"]),
         }
+        # Held-out test results, when a holdout was carved (paths.holdout_frac).
+        # Report TestEnsemble_AUC as the headline: CV numbers are best-epoch
+        # validation on the partition used for early stopping (audit B1).
+        if "Test_AUC_mean" in res:
+            json_results[method].update({
+                k: (float(v) if isinstance(v, float)
+                    else int(v) if isinstance(v, int)
+                    else [float(x) for x in v] if isinstance(v, list)
+                    else v)
+                for k, v in res.items()
+                if k.startswith(("Test_", "TestEnsemble_"))
+            })
 
     os.makedirs(output_dir, exist_ok=True)
     json_path = os.path.join(output_dir, "comprehensive_results_v4.json")

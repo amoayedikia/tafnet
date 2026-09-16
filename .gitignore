@@ -41,8 +41,8 @@ outputs/
 !docs/**/*.png
 
 # Local data roots
-data/
-!data/README.md
+/data/
+!/data/README.md
 
 # ---------------------------------------------------------------------------
 # Python
@@ -101,3 +101,12 @@ desktop.ini
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+
+# Backups and transfer bundles (added 16 Sep 2026)
+*.bak
+*.bak[0-9]
+*.prebranch
+*.tgz
+*.tar.gz
+*.zip
+results_oasis3_v4/
