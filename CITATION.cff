@@ -1,20 +1,20 @@
 cff-version: 1.2.0
-title: "TAFNet: Adaptive Temporal Gating of Longitudinal MRI for Alzheimer's Prediction"
+title: "TAFNet: Adaptive Temporal Gating of Longitudinal Magnetic Resonance Imaging for Dementia Prediction"
 message: "If you use this software, please cite the accompanying manuscript."
 type: software
 authors:
+  - family-names: Fin
+    given-names: Sara
+    affiliation: Monash University
   - family-names: Moayedikia
     given-names: Alireza
     affiliation: Swinburne University of Technology
     orcid: ""
-  - family-names: Fin
-    given-names: Sara
-    affiliation: Monash University
   - family-names: Troncoso
     given-names: Alicia
     affiliation: Universidad Pablo de Olavide
   - family-names: Wiil
     given-names: Uffe Kock
     affiliation: University of Southern Denmark
-repository-code: ""
+repository-code: "https://github.com/amoayedikia/tafnet"
 license: MIT

@@ -1,4 +1,4 @@
-# TAFNet — Adaptive Temporal Gating of Longitudinal MRI for Alzheimer's Prediction
+# TAFNet — Adaptive Temporal Gating of Longitudinal Magnetic Resonance Imaging for Dementia Prediction
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.28397-b31b1b.svg)](https://arxiv.org/abs/2605.28397)
 
@@ -11,14 +11,6 @@ diagnoses, preprocessing, encoder pretraining, 5-fold subject-level
 cross-validation with a subject-level held-out test set against five
 benchmarks, per-patient gate analysis, and zero-shot scoring of an external
 cohort (OASIS-3).
-
-> **Version note.** Paper: [arXiv:2605.28397](https://arxiv.org/abs/2605.28397).
-> arXiv v1 (May 2026) describes an earlier version of the model and cohort.
-> This code and the results below are the corrected version (v4): conversion
-> labels from DXSUM instead of the enrolment group, a Phase 4 encoder pool
-> disjoint from the task cohort, a subject-level held-out test set, and
-> validation-derived operating points. The numbers here supersede arXiv v1;
-> an updated manuscript is in preparation.
 
 > **No data is included in this repository.** ADNI and OASIS are distributed
 > under Data Use Agreements that prohibit redistribution. See
@@ -307,17 +299,14 @@ in the analysis or writing.
 
 ## Citation
 
-Moayedikia A., Fin S., Troncoso Lora A., Wiil U. K. *Adaptive Temporal Gating of
-Longitudinal Magnetic Resonance Imaging for Alzheimer's Prediction.*
+Fin S., Moayedikia A., Troncoso Lora A., Wiil U. K. *Adaptive Temporal Gating of Longitudinal Magnetic Resonance Imaging for Dementia Prediction.*
 arXiv:2605.28397, 2026. https://arxiv.org/abs/2605.28397
 
 ```bibtex
-@article{moayedikia2026tafnet,
-  title   = {Adaptive Temporal Gating of Longitudinal Magnetic Resonance Imaging for Alzheimer's Prediction},
-  author  = {Moayedikia, Alireza and Fin, Sara and Troncoso Lora, Alicia and Wiil, Uffe Kock},
+@article{fin2026tafnet,
+  title   = {Adaptive Temporal Gating of Longitudinal Magnetic Resonance Imaging for Dementia Prediction},
+  author  = {Fin, Sara and Moayedikia, Alireza and Troncoso Lora, Alicia and Wiil, Uffe Kock},
   journal = {arXiv preprint arXiv:2605.28397},
   year    = {2026}
 }
 ```
-
-Please also cite the updated version once available.
