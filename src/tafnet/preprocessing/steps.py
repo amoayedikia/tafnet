@@ -28,8 +28,8 @@ from scipy import ndimage
 
 def get_subject_id_from_adni_path(filepath: str, adni_root_basename: str) -> str:
     """
-    Extract the top-level ADNI subject folder name (e.g. '136_S_0429') from
-    a deeply nested path like .../ADNI/136_S_0429/MPR.../date/series/file.nii.
+    Extract the top-level ADNI subject folder name (e.g. '000_S_0000') from
+    a deeply nested path like .../ADNI/000_S_0000/MPR.../date/series/file.nii.
     """
     parts = os.path.normpath(filepath).split(os.sep)
     try:

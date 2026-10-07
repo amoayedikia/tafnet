@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# NOTE: this is the earlier (v1) preprocessing pipeline. It was NOT used for the
+# results in the paper: its final centre crop removes part of the cortex. Use
+# scripts/preprocess_v2.py. Kept because the OASIS scripts import its steps.
 """
 Stage 1: Run the 5-step ADNI preprocessing pipeline on raw NIfTI scans.
 

@@ -1,5 +1,9 @@
 # OASIS-3 external validation
 
+> **Note (October 2026).** This document describes an evaluation run with an earlier
+> model version and the earlier (v1) preprocessing pipeline. It is not part of the
+> paper, and its numbers do not apply to the current models.
+
 Zero-shot transfer of the ADNI-trained TAFNet checkpoint to OASIS-3, with no
 cohort-specific adaptation. OASIS-3 probes transfer at *matched* acquisition
 (3T, as in ADNI), so any residual gap is attributable to site and cohort effects

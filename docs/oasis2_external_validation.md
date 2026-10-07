@@ -1,5 +1,9 @@
 # OASIS-2 External Validation
 
+> **Note (October 2026).** This document describes an evaluation run with an earlier
+> model version and the earlier (v1) preprocessing pipeline. It is not part of the
+> paper, and its numbers do not apply to the current models.
+
 This document describes how to reproduce the OASIS-2 external-validation results
 for TAFNet: zero-shot transfer of the ADNI-trained checkpoint, and the
 warm-start fine-tuning A/B comparison under subject-level 5-fold CV.

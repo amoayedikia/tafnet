@@ -22,6 +22,7 @@ nibabel>=5.1
 SimpleITK>=2.3
 antspyx>=0.4
 antspynet>=0.2
+templateflow>=23.0      # MNI152NLin2009cAsym template for scripts/preprocess_v2.py
 
 # Note: dcm2niix is a binary, not a Python package. Install it via:
 #   Ubuntu/Debian:  sudo apt-get install -y dcm2niix

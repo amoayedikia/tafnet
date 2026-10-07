@@ -4,7 +4,7 @@ Shared 3D encoder backbone (JDACEncoder3D) used by all longitudinal methods.
 Provides:
     ConvBlock3D       — Conv3d + BN + LeakyReLU
     DoubleConvBlock3D — two ConvBlock3D in series
-    DCCA3D            — Dense Context Channel Attention block
+    DCCA3D            — Dynamic Contextual Channel Attention block
     JDACEncoder3D     — five-level encoder with optional DCCA, ending in a
                         (B, 128, 8, 8, 8) bottleneck for 128^3 input.
 """
@@ -38,7 +38,7 @@ class DoubleConvBlock3D(nn.Module):
 
 
 class DCCA3D(nn.Module):
-    """Dense Context Channel Attention — 3D variant."""
+    """Dynamic Contextual Channel Attention — 3D variant."""
 
     def __init__(self, channels: int, reduction: int = 16) -> None:
         super().__init__()

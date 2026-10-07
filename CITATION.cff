@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "TAFNet: Adaptive Temporal Gating of Longitudinal Magnetic Resonance Imaging for Dementia Prediction"
+title: "TAFNet: A Two-Scan Deep Learning Model for Predicting Dementia in Mild Cognitive Impairment"
 message: "If you use this software, please cite the accompanying manuscript."
 type: software
 authors:
@@ -10,11 +10,14 @@ authors:
     given-names: Alireza
     affiliation: Swinburne University of Technology
     orcid: ""
-  - family-names: Troncoso
-    given-names: Alicia
-    affiliation: Universidad Pablo de Olavide
+  - family-names: White
+    given-names: David J.
+    affiliation: Swinburne University of Technology
   - family-names: Wiil
     given-names: Uffe Kock
     affiliation: University of Southern Denmark
+  - family-names: Troncoso
+    given-names: Alicia
+    affiliation: Universidad Pablo de Olavide
 repository-code: "https://github.com/amoayedikia/tafnet"
 license: MIT

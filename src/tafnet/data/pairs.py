@@ -11,7 +11,7 @@ label from the collection CSV's `Group` column:
 `Group` is the enrolment research group and is constant across a subject's
 visits (verified: 0 of 971 subjects change Group), so "label at follow-up" is
 just the enrolment label and the trained task was AD-enrolled vs rest — not
-MCI-to-dementia conversion. See claude/tafnet-critique-evidence.md §2.
+MCI-to-dementia conversion.
 
 This class instead consumes the output of `label_adni_pairs.py`, which derives
 conversion from DXSUM.csv the way Section 3.1 describes: MCI at baseline,
